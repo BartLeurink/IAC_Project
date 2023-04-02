@@ -15,7 +15,7 @@ Vagrant.configure("2") do |config|
       node.ssh.private_key_path = [ '~/.ssh/id_rsa', '~/.vagrant.d/insecure_private_key' ]
       node.ssh.forward_agent = true
       node.vm.provision "shell" do |s|
-      ssh_pub_key = File.readlines("/home/student/.ssh/id_rsa.pub").first.strip
+      ssh_pub_key = File.readlines("/media/bart/Vagrant/IAC/.ssh/id_rsa.pub").first.strip
       s.inline = <<-SHELL
       echo #{ssh_pub_key} >> /home/vagrant/.ssh/authorized_keys
       echo #{ssh_pub_key} >> /root/.ssh/authorized_keys
@@ -23,8 +23,8 @@ Vagrant.configure("2") do |config|
       end
 
       node.vm.provision "ansible" do |ansible|
-	  ansible.playbook = "/media/student/Data/ansible/testomgeving/playbook.yml"
-	  ansible.inventory_path = "/media/student/Data/ansible/inventory.yml"
+	  ansible.playbook = "/media/bart/Vagrant/IAC/testomgeving/playbook.yml"
+	  ansible.inventory_path = "/media/bart/Vagrant/IAC/inventory.yml"
       end
     end
   end 
