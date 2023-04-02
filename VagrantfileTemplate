@@ -1,0 +1,31 @@
+Vagrant.configure("2") do |config|
+  aantalWebservers = 0
+  klantnummer = 0
+  (1..aantalWebservers).each do |i|
+    config.vm.define "Testweb0#{i}" do |node|
+      node.vm.box = "ubuntu/jammy64"
+      node.vm.hostname = "TestWebserver0#{i}"
+      node.vm.network "private_network", ip: "192.168.56.#{klantnummer}#{i}"
+
+      node.vm.provider "virtualbox" do |node|
+	node.name = "Testwebserver0#{i}"
+	node.memory = 2048
+      end
+      node.ssh.insert_key = false
+      node.ssh.private_key_path = [ '~/.ssh/id_rsa', '~/.vagrant.d/insecure_private_key' ]
+      node.ssh.forward_agent = true
+      node.vm.provision "shell" do |s|
+      ssh_pub_key = File.readlines("/media/bart/Vagrant/IAC/.ssh/id_rsa.pub").first.strip
+      s.inline = <<-SHELL
+      echo #{ssh_pub_key} >> /home/vagrant/.ssh/authorized_keys
+      echo #{ssh_pub_key} >> /root/.ssh/authorized_keys
+      SHELL
+      end
+
+      node.vm.provision "ansible" do |ansible|
+	  ansible.playbook = "/media/bart/Vagrant/IAC/testomgeving/playbook.yml"
+	  ansible.inventory_path = "/media/bart/Vagrant/IAC/inventory.yml"
+      end
+    end
+  end 
+end
