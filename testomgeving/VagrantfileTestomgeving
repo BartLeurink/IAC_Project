@@ -1,6 +1,6 @@
 Vagrant.configure("2") do |config|
-  aantalWebservers = 2
-  klantnummer = 20
+  aantalWebservers = 0
+  klantnummer = 0
   (1..aantalWebservers).each do |i|
     config.vm.define "Testweb0#{i}" do |node|
       node.vm.box = "ubuntu/jammy64"
