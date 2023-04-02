@@ -1,0 +1,77 @@
+---
+# tasks file for webserver
+- name: Install prerequisites
+  apt: name={{ item }} update_cache=yes state=latest force_apt_get=yes
+  loop: [ 'aptitude' ]
+
+- name: Install packages
+  apt:
+    pkg:
+      - apache2
+      - software-properties-common
+      - ca-certificates
+      - lsb-release
+      - apt-transport-https
+    state: latest
+    update_cache: true
+
+- name: Install PHP
+  ansible.builtin.apt_repository:
+    repo: ppa:ondrej/php
+
+- name: Install packages ten behoeve van werking PHP
+  apt:
+    pkg:
+      - php8.1
+      - php8.1-cli
+      - php8.1-mongodb
+      - php8.1-intl
+      - php8.1-mbstring
+      - composer
+    state: latest
+    update_cache: true
+
+- set_fact:
+    hosts_content: "{{ lookup('template', 'files/phpini.cfg.j2') }}"
+
+- blockinfile:
+    dest: /etc/php/8.1/apache2/php.ini
+    content: '{{ hosts_content }}'
+    state: present
+
+- name: Create document root
+  file:
+    path: "/var/www/{{ http_host }}"
+    state: directory
+    owner: "{{ app_user }}"
+    mode: '0755'
+
+- name: Copy index test page
+  template:
+    src: "files/index.php.j2"
+    dest: "/var/www/{{ http_host }}/index.php"
+
+- name: Set up Apache virtuahHost
+  template:
+    src: "files/apache.conf.j2"
+    dest: "/etc/apache2/sites-available/{{ http_conf }}"
+
+- composer:
+    command: require
+    arguments: mongodb/mongodb
+    working_dir: /var/www/test
+
+- name: Enable new site
+  shell: /usr/sbin/a2ensite {{ http_conf }}
+  notify: Reload Apache
+
+- name: Disable default Apache site
+  shell: /usr/sbin/a2dissite 000-default.conf
+  when: disable_default
+  notify: Reload Apache
+
+- name: "UFW - Allow HTTP on port {{ http_port }}"
+  ufw:
+    rule: allow
+    port: "{{ http_port }}"
+    proto: tcp

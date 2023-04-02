@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+   <head>
+       <title>Welcome to test!</title>
+   </head>
+   <body>
+       <?php
+       require "/var/www//test/vendor/autoload.php";
+       try {
+	   $user = "beheerder";
+	   $pwd = 'Windesheim2023!';
+           $conn = new MongoDB\Client("mongodb://${user}:${pwd}@192.168.56.30:27017");
+           $collection = $conn->selectCollection('test', 'products');
+           $result = $collection->findOne();
+           var_dump($result);
+       }
+       catch (Throwable $e) {
+           echo "Het werkt niet: " . $e->getMessage() . PHP_EOL;
+       }
+       ?>
+   </body>
+</html>

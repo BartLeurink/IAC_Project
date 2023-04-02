@@ -1,0 +1,7 @@
+---
+# vars file for webserver
+app_user: "vagrant"
+http_host: "test"
+http_conf: "test.conf"
+http_port: "80"
+disable_default: true

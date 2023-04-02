@@ -1,0 +1,23 @@
+---
+# tasks file for loadbalancer
+- name: Install prerequisites
+  apt: name={{ item }} update_cache=yes state=latest force_apt_get=yes
+  loop: [ 'aptitude' ]
+
+- name: Install haproxy
+  apt: name=haproxy update_cache=yes state=latest
+  notify: Restart haproxy
+
+- name: "UFW - Allow HTTP on port {{ http_port }}"
+  ufw:
+    rule: allow
+    port: "{{ http_port }}"
+    proto: tcp
+
+- set_fact:
+    hosts_content: "{{ lookup('template', 'files/haproxy.cfg.j2') }}"
+
+- blockinfile:
+    dest: /etc/haproxy/haproxy.cfg
+    content: '{{ hosts_content }}'
+    state: present

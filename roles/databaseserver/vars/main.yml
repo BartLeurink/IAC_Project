@@ -1,0 +1,4 @@
+---
+# vars file for databaseserver
+mongodbAdmin: "beheerder"
+mongodbAdminPass: "Windesheim2023!"

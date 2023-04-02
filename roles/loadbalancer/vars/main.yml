@@ -1,0 +1,5 @@
+---
+# vars file for loadbalancer
+http_port: "80"
+isTrue: true
+

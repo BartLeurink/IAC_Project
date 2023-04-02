@@ -1,0 +1,146 @@
+---
+# tasks file for databaseserver
+
+
+- name: Install prerequisites
+  apt: name={{ item }} update_cache=yes state=latest force_apt_get=yes
+  loop: [ 'aptitude' ]
+
+- name: Install troep die nodig is
+  apt:
+    pkg:
+      - wget
+      - curl
+      - gnupg2
+      - lsb-release
+      - dirmngr
+      - gnupg
+      - apt-transport-https
+      - ca-certificates
+      - software-properties-common
+      - python3-pip
+    state: latest
+    update_cache: true
+
+- name: Install PYMONGO
+  ansible.builtin.pip:
+    name: pymongo
+
+- name: import public key voor mongodb
+  apt_key:
+    url: 'https://www.mongodb.org/static/pgp/server-6.0.asc'
+    state: present
+
+- name: add repository
+  apt_repository:
+    repo: "deb [ arch=amd64,arm64 ] https://repo.mongodb.org/apt/ubuntu focal/mongodb-org/6.0 multiverse"
+    state: present
+    update_cache: true
+
+- name: install mongoDB
+  apt:
+    name: mongodb-org
+    state: present
+    update_cache: yes
+
+- name: install MongoDB shell
+  apt:
+    name: mongodb-mongosh
+    state: present
+    update_cache: yes
+
+- name: restart mongodb
+  service: name=mongod state=restarted
+
+- name: copy config file
+  copy:
+    src: mongod.conf
+    dest: /etc/mongod.conf
+    owner: root
+    group: root
+    mode: 0644
+  notify:
+    - restart mongodb
+
+- name: create /etc/security/limits.d/mongodb.conf
+  copy:
+    src: security-mongodb.conf
+    dest: /etc/security/limits.d/mongodb.conf
+    owner: root
+    group: root
+    mode: 0644
+  notify:
+    - restart mongodb
+
+- name: Bestand in de MongoDB plaatsen
+  community.mongodb.mongodb_shell:
+    mongo_cmd: "mongosh"
+    eval: "db.products.insert( { bikes: 4 } )"
+
+- name: User aanmaken voor MongoDB
+  mongodb_user:
+    login_port: "27017"
+    database: "admin"
+    name: "{{ mongodbAdmin }}"
+    password: "{{ mongodbAdminPass }}"
+    roles: "root"
+
+- name:  Set vm.dirty_ratio
+  sysctl:
+    name: vm.dirty_ratio
+    value: '15'
+    state: present
+
+- name:  Set vm.dirty_background_ratio
+  sysctl:
+    name: vm.dirty_background_ratio
+    value: '5'
+    state: present
+
+- name: Set vm.swappiness
+  sysctl:
+    name: vm.swappiness
+    value: '10'
+    state: present
+
+- name: Set net.core.somaxconn
+  sysctl:
+    name: net.core.somaxconn
+    value: '4096'
+    state: present
+
+- name: Set net.ipv4.tcp_fin_timeout
+  sysctl:
+    name: net.ipv4.tcp_fin_timeout
+    value: '30'
+    state: present
+
+- name: net.ipv4.tcp_keepalive_intvl
+  sysctl:
+    name: net.ipv4.tcp_keepalive_intvl
+    value: '30'
+    state: present
+
+- name: net.ipv4.tcp_keepalive_time
+  sysctl:
+    name: net.ipv4.tcp_keepalive_time
+    value: '120'
+    state: present
+
+- name: net.ipv4.tcp_max_syn_backlog
+  sysctl:
+    name: net.ipv4.tcp_max_syn_backlog
+    value: '4096'
+    state: present
+
+- name: Ensure mongodb is running and and enabled to start automatically on reboots
+  systemd:
+    name: mongod
+    enabled: yes
+    state: started
+
+- name: install ntp
+  apt:
+    name: ntp
+    state: present
+    update_cache: yes

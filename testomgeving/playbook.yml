@@ -1,0 +1,18 @@
+---
+- hosts: webservers
+  become: true
+  become_method: sudo
+  roles:
+    - "/media/student/Data/ansible/roles/webserver"
+
+- hosts: loadbalancers
+  become: true
+  become_method: sudo
+  roles:
+    - "/media/student/Data/ansible/roles/loadbalancer"
+
+- hosts: databaseservers
+  become: true
+  become_method: sudo
+  roles:
+    - "/media/student/Data/ansible/roles/databaseserver"
