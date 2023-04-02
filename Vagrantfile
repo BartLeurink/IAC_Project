@@ -10,7 +10,7 @@ Vagrant.configure("2") do |config|
         db01.memory = 3000
       end
       db01.ssh.insert_key = false
-      db01.ssh.private_key_path = [ '/media/bart/Vagrant/IAC/.ssh/id_rsa', '~/.vagrant.d/insecure_private_key' ]
+      db01.ssh.private_key_path = [ '/.ssh/id_rsa', '~/.vagrant.d/insecure_private_key' ]
       db01.ssh.forward_agent = true
       db01.vm.provision "shell" do |s|
       ssh_pub_key = File.readlines("/media/bart/Vagrant/IAC/.ssh/id_rsa.pub").first.strip
@@ -38,7 +38,7 @@ Vagrant.configure("2") do |config|
       node.memory = 2048
         end
         node.ssh.insert_key = false
-        node.ssh.private_key_path = [ '/media/bart/Vagrant/IAC/.ssh/id_rsa', '~/.vagrant.d/insecure_private_key' ]
+        node.ssh.private_key_path = [ '/.ssh/id_rsa', '~/.vagrant.d/insecure_private_key' ]
         node.ssh.forward_agent = true
         node.vm.provision "shell" do |s|
         ssh_pub_key = File.readlines("/media/bart/Vagrant/IAC/.ssh/id_rsa.pub").first.strip
@@ -65,7 +65,7 @@ Vagrant.configure("2") do |config|
         lb01.memory = 2048
       end
       lb01.ssh.insert_key = false
-      lb01.ssh.private_key_path = [ '/media/bart/Vagrant/IAC/.ssh/id_rsa', '~/.vagrant.d/insecure_private_key' ]
+      lb01.ssh.private_key_path = [ '/.ssh/id_rsa', '~/.vagrant.d/insecure_private_key' ]
       lb01.ssh.forward_agent = true
       lb01.vm.provision "shell" do |s|
       ssh_pub_key = File.readlines("/media/bart/Vagrant/IAC/.ssh/id_rsa.pub").first.strip
