@@ -1,0 +1,11 @@
+[loadbalancers]
+lb01 ansible_host=192.168.56.20 ansible_ssh_private_key_file=/media/bart/Vagrant/IAC/.ssh/id_rsa
+
+[databaseservers]
+db01 ansible_host=192.168.56.30 ansible_ssh_private_key_file=/media/bart/Vagrant/IAC/.ssh/id_rsa
+
+[webservers]
+web01 ansible_host=192.168.56.11 ansible_ssh_private_key_file=/media/bart/Vagrant/IAC/.ssh/id_rsa
+web02 ansible_host=192.168.56.12 ansible_ssh_private_key_file=/media/bart/Vagrant/IAC/.ssh/id_rsa
+web03 ansible_host=192.168.56.13 ansible_ssh_private_key_file=/media/bart/Vagrant/IAC/.ssh/id_rsa
+web04 ansible_host=192.168.56.14 ansible_ssh_private_key_file=/media/bart/Vagrant/IAC/.ssh/id_rsa
