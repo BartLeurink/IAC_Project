@@ -1,0 +1,18 @@
+---
+- hosts: databaseservers
+  become: true
+  become_method: sudo
+  roles:
+    - "/media/bart/Vagrant/IAC/roles/database"
+    
+- hosts: webservers
+  become: true
+  become_method: sudo
+  roles:
+    - "/media/bart/Vagrant/IAC/roles/webserver"
+
+- hosts: loadbalancers
+  become: true
+  become_method: sudo
+  roles:
+    - "/media/bart/Vagrant/IAC/roles/loadbalancer"
